@@ -1,0 +1,11 @@
+(define (problem BLOCKS-4-0)
+ (:requirements :strips :typing)
+(:domain BLOCKS)
+(:objects C - block
+			A - block
+			B - block
+			D - block)
+(:INIT (CLEAR C) (CLEAR A) (CLEAR B) (CLEAR D) (ONTABLE C) (ONTABLE A)
+ (ONTABLE B) (ONTABLE D) (HANDEMPTY))
+(:goal (AND (ON D C) (ON C B) (ON B A)))
+)
