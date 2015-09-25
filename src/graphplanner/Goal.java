@@ -37,13 +37,20 @@ public class Goal {
 		
 	}
 
-    public Goal(State state, PropositionLayer theLayer) {
+/*    public Goal(State state, PropositionLayer theLayer) {
     	proposition = theLayer.getProposition (state);
         nactions = proposition.getAddEffects().size();
         ntried = 0;
         achieved = false;
-    }
-
+    }*/
+    public Goal(String state, PropositionLayer theLayer) {
+    	proposition = theLayer.getProposition (state);
+        nactions = proposition.getAddEffects().size();
+        ntried = 0;
+        achieved = false;
+        }
+    
+    
     public Action nextAction() {
         if (ntried < nactions)
         {

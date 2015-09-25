@@ -1,6 +1,5 @@
 package graphplanner;
 
-import java.io.*;
 import java.util.*;
 
 
@@ -12,29 +11,29 @@ public class Proposition {
     /**
      * The pre_list.
      */
-    Vector pre_list;
+    Vector<Action> pre_list;
 
     /**
      * The add_list.
      */
-    Vector add_list;
+    Vector<Action> add_list;
 
     /**
      * The del_list.
      */
-    Vector del_list;
+    Vector<Action> del_list;
 
     /**
      * The mutex_props.
      */
-    Vector mutex_props;
+    Vector<String> mutex_props;
 
     /**
      * The name.
      */
     //private String name;
     
-    public State state;
+    public String state;
 
 
     // ------------------------------------------------------------------------
@@ -45,12 +44,12 @@ public class Proposition {
      *  
      * @param theName The the name.
      */
-    public Proposition(State st) {
+    public Proposition(String st) {
         state = st;
-        pre_list = new Vector();
-        add_list = new Vector();
-        del_list = new Vector();
-        mutex_props = new Vector();
+        pre_list = new Vector<Action>();
+        add_list = new Vector<Action>();
+        del_list = new Vector<Action>();
+        mutex_props = new Vector<String>();
     }
 
 
@@ -62,7 +61,7 @@ public class Proposition {
      *  
      * @return  The name.
      */
-    public State getState() {
+    public String getState() {
         return state;
     }
 
@@ -103,7 +102,7 @@ public class Proposition {
      *  
      * @return  The pre conditions.
      */
-    public Vector getPreConditions() {
+    public Vector<Action> getPreConditions() {
         return pre_list;
     }
 
@@ -112,7 +111,7 @@ public class Proposition {
      *  
      * @return  The add effects.
      */
-    public Vector getAddEffects() {
+    public Vector<Action> getAddEffects() {
         return add_list;
     }
 
@@ -121,7 +120,7 @@ public class Proposition {
      *  
      * @return  The del effects.
      */
-    public Vector getDelEffects() {
+    public Vector<Action> getDelEffects() {
         return del_list;
     }
 
@@ -130,7 +129,7 @@ public class Proposition {
      *  
      * @return  The mutex props.
      */
-    public Vector getMutexProps() {
+    public Vector<String> getMutexProps() {
         return mutex_props;
     }
 
@@ -140,8 +139,8 @@ public class Proposition {
      * @param index The index.
      * @return  The mutex prop.
      */
-    public Proposition getMutexProp(int index) {
-        return (Proposition) mutex_props.elementAt(index);
+    public String getMutexProp(int index) {
+        return (String) mutex_props.elementAt(index);
     }
 
     /**
@@ -150,10 +149,10 @@ public class Proposition {
      * @param theProp The the prop.
      */
     public void addMutexProp(Proposition theProp) {
-        if (mutex_props.contains (theProp) == false) // check that I don't know this fact
+        if (mutex_props.contains (theProp.state) == false) // check that I don't know this fact
         {
-            mutex_props.addElement (theProp);
-            theProp.getMutexProps().addElement (this);
+            mutex_props.addElement (theProp.state);
+            theProp.getMutexProps().addElement (this.state);
         }
     }
 
@@ -166,6 +165,22 @@ public class Proposition {
     public boolean isMutex(Proposition theProp) {
         return mutex_props.contains (theProp);
     }
+    
+    public boolean mutexEqual(Proposition prop2){
+    	Vector<String> m1 = this.getMutexProps();
+    	Vector<String> m2 = prop2.getMutexProps();
+    	
+    	if(m1.size() != m2.size()) return false;
+    	
+    	for(int i=0; i<m1.size(); i++){
+    		String mp1 = m1.get(i);
+    		if(!m2.contains(mp1)){
+    			return false;
+    		}
+    	} 	
+    	
+    	return true;
+    }
 
     /**
      * ...
@@ -174,11 +189,11 @@ public class Proposition {
      */
     public String toString() {
         String s = new String();
-        s += "\nProposition: " + state.toString();
-        s += "\n Mutex with: ";
+        s += state.toString();
+        s += "\n\tMutex with: ";
         for (int i = 0; i < mutex_props.size(); i++)
         {
-            s += getMutexProp(i).state.toString()+ ", ";
+            s += getMutexProp(i).toString()+ "  ";
         }
         return s;
     }

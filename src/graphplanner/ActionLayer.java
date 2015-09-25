@@ -1,23 +1,25 @@
 package graphplanner;
 
-import java.io.*;
 import java.util.*;
 
 
 public class ActionLayer {
-
+	
+	// ------------------------------------------------------------------------
+    // --- fields                                                           ---
+    // ------------------------------------------------------------------------
     /**
      * The pos.
      */
     int pos;
 
     /**
-     * previous and next proposition layers
+     * previous proposition layers
      */
     private PropositionLayer prevPropositionLayer=null;
 
     /**
-     * The next.
+     * The next proposition layers
      */
     private PropositionLayer nextPropositionLayer=null;
 
@@ -39,31 +41,23 @@ public class ActionLayer {
     /**
      * The applicable.
      */
-    private Vector applicable=null;
+    private Vector<Action> applicable=null;
 
     /**
      * The my goals.
      */
-    private Vector myGoals=null;
+    private Vector<Goal> myGoals=null;
 
 
     // ------------------------------------------------------------------------
     // --- constructors                                                     ---
     // ------------------------------------------------------------------------
-    /**
-     * Creates a new instance of ActionLayer.
-     */
+
     public ActionLayer() {
-        actions = new HashMap();
+        actions = new HashMap<OperatorHead, Action>();
         conjunction = new Conjunction();
     }
 
-    /**
-     * Creates a new instance of ActionLayer.
-     *  
-     * @param thePrev The the prev.
-     * @param appActions The app actions.
-     */
     public ActionLayer(PropositionLayer thePrev, Vector<Action> appActions) {
     	prevPropositionLayer = thePrev;
         nextPropositionLayer = new PropositionLayer (this);
@@ -75,8 +69,7 @@ public class ActionLayer {
         {
             Action act = (Action) appActions.elementAt(i);
             actions.put (act.getActionHead(), act);
-            //conjunction.addLiteral (act.getActionHead().);
-            // establish precondition edges
+            //establish precondition edges
             ConnectPreEdges (act);
             //create and establish add / del edges
             ConnectADEdges (act);
@@ -93,37 +86,21 @@ public class ActionLayer {
     // ------------------------------------------------------------------------
     // --- methods                                                          ---
     // ------------------------------------------------------------------------
-    /**
-     * Returns the conjunction.
-     *  
-     * @return  The conjunction.
-     */
+
     public Conjunction getConjunction() {
         return conjunction;
     }
 
-    /**
-     * ...
-     *  
-     * @return  The int.
-     */
+
     public int size() {
         return actions.size();
     }
 
-    /**
-     * ...
-     *  
-     * @param theLayer The the layer.
-     * @return  The boolean.
-     */
     public boolean equal(ActionLayer theLayer) {
         return conjunction.equal (theLayer.getConjunction());
     }
 
-    /**
-     * ...
-     */
+
     public void calculateMutex() {
         createActionVector();
         int len = actions.size();
@@ -143,68 +120,36 @@ public class ActionLayer {
         }
     }
 
-    /**
-     * ...
-     *  
-     * @return  The string.
-     */
     public String toString() {
         String s = new String ();
-        s += "\n Action Layer";
+        s += "\n Action Layer\n\t";
         for (int i = 0; i < actions_vector.size(); i++)
-        s += "\n" + getAction(i).toString();
+        	s += getAction(i).toString()+"  ";
         return s;
     }
 
-    /**
-     * Returns the prev layer.
-     *  
-     * @return  The prev layer.
-     */
     public PropositionLayer getPrevLayer() {
         return prevPropositionLayer;
     }
 
-    /**
-     * Returns the next layer.
-     *  
-     * @return  The next layer.
-     */
     public PropositionLayer getNextLayer() {
         return nextPropositionLayer;
     }
 
-    /**
-     * Returns the action.
-     *  
-     * @param key The key.
-     * @return  The action.
-     */
     public Action getAction(String key) {
         return (Action) actions.get (key);
     }
 
-    /**
-     * Returns the action.
-     *  
-     * @param index The index.
-     * @return  The action.
-     */
     public Action getAction(int index) {
         return (Action) actions_vector.elementAt (index);
     }
 
-    /**
-     * ...
-     *  
-     * @param theGoals The the goals.
-     * @return  The boolean.
-     */
-    public boolean searchTheLevel(Conjunction theGoals) {
+    @SuppressWarnings("unused")
+	public boolean searchTheLevel(Conjunction theGoals) {
         // TODO: test for memoized goals. if found return -1
         if (myGoals == null || myGoals.size() == 0)
         {
-            applicable = new Vector();
+            applicable = new Vector<Action>();
             myGoals = new Vector<Goal>();
             pos = 0;
             int len = theGoals.size();
@@ -238,9 +183,6 @@ public class ActionLayer {
         return true;
     }
 
-    /**
-     * ...
-     */
     public void printApplicable() {
         if (applicable == null)
         {
@@ -264,7 +206,7 @@ public class ActionLayer {
      * @return  The applicable actions.
      */
     public Vector<Action> getApplicableActions() {
-        Vector<Action> rVal = new Vector();
+        Vector<Action> rVal = new Vector<Action>();
         int len = applicable.size();
         for(int i =0; i < len; i++)
         {
@@ -277,22 +219,19 @@ public class ActionLayer {
         for (int i = 0; i < rVal.size() ; i++)
         {
         	Action s1 = (Action) rVal.elementAt(i);
-            for (int j = i + 1; j < rVal.size(); j++)
+            for (int j = i + 1; j < rVal.size();)
             {
             	Action s2 = (Action) rVal.elementAt(j);
-                if (s1.equals(s2))
-                rVal.removeElementAt(j);
+                if (s1.equals(s2)){
+                	rVal.removeElementAt(j);
+                }else{
+                	j++;
+                }
             }
         }
         return rVal;
     }
 
-    /**
-     * ...
-     *  
-     * @param theGoals The the goals.
-     * @return  The boolean.
-     */
     public boolean searchPlan(Conjunction theGoals) {
         // if goals are memoized return no plan, null.
         if (this.searchTheLevel (theGoals)) // search this level
@@ -324,20 +263,13 @@ public class ActionLayer {
         }
     }
 
-    /**
-     * Returns the actions.
-     *  
-     * @return  The actions.
-     */
-    HashMap getActions() {
+    HashMap<OperatorHead, Action> getActions() {
         return actions;
     }
 
     /**
      * connect the operator theAct to it's precondition propositions
      * in the prev layer.
-     *  
-     * @param theAct The the act.
      */
     private void ConnectPreEdges(Action theAct) {
         Conjunction precondition = theAct.getPreConditions();
@@ -345,7 +277,7 @@ public class ActionLayer {
         int len = precondition.size();
         for (int i = 0; i < len; i++)
         {
-            State s = precondition.get(i);
+            String s = precondition.get(i);
             temp = prevPropositionLayer.getProposition (s);
             temp.putPreEdge (theAct);
             theAct.addPreProp (temp);
@@ -355,8 +287,6 @@ public class ActionLayer {
     /**
      * connect the operator theAct to it's add/del propositions
      * in the next layer.
-     *  
-     * @param theAct The the act.
      */
     private void ConnectADEdges(Action theAct) {
         Conjunction add = theAct.getAddEffects();
@@ -389,14 +319,15 @@ public class ActionLayer {
         for (int i = 0; i < len; i++)
         {
             // create noop object
-            String s = new String ("noop "+ cnj.get(i));
+            String s = new String ("noop-"+ cnj.get(i));
             Action temp = new Action();
             temp.setActionName(s);
+            temp.getActionHead().setOpName(s);
             temp.setPreConditions (new Conjunction (cnj.get(i)));
             temp.setAddEffects (new Conjunction (cnj.get(i)));
             // add noop to this action layer
             actions.put (temp.getActionHead(), temp);
-            //conjunction.add(temp.getHeader());
+            conjunction.add(s);
             // connect precondition edge
             Proposition p = prevPropositionLayer.getProposition (cnj.get(i));
             p.putPreEdge (temp);
@@ -421,10 +352,6 @@ public class ActionLayer {
 
     /**
      * first effect negates second effect or vise versa
-     *  
-     * @param op1 The op1.
-     * @param op2 The op2.
-     * @return  The boolean.
      */
     private boolean checkEffects(Action op1, Action op2) {
         Conjunction c1 = op1.getAddEffects();
@@ -473,18 +400,11 @@ public class ActionLayer {
         return false;
     }
 
-    /**
-     * ...
-     *  
-     * @param op1 The op1.
-     * @param op2 The op2.
-     * @return  The boolean.
-     */
     private boolean checkPreMutex(Action op1, Action op2) {
         // build two (Proposition) Vectors of preconditions of op1 and op2
         // check mutex relations among propositions
-        Vector pre1 = op1.getPreProps();
-        Vector pre2 = op2.getPreProps();
+        Vector<Proposition> pre1 = op1.getPreProps();
+        Vector<Proposition> pre2 = op2.getPreProps();
         int len1 = pre1.size();
         int len2 = pre2.size();
         for (int i = 0; i < len1; i++)

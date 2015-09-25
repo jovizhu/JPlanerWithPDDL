@@ -1,0 +1,22 @@
+
+pickup
+Parameter:
+b ?ob
+Mutex With: pickup, noop-clear(b), pickup, noop-arm-empty, noop-on-table(b), 
+
+stack
+Parameter:
+b ?ob
+c ?underob
+Mutex With: noop-holding(b), noop-clear(b), pickup, putdown, stack, noop-holding(a), putdown, noop-holding(c), putdown, stack, stack, pickup, stack, noop-clear(c), noop-on-table(b), noop-arm-empty, stack, pickup, 
+
+pickup
+Parameter:
+a ?ob
+Mutex With: stack, noop-on(b, a), putdown, noop-arm-empty, unstack, stack, unstack, putdown, putdown, noop-clear(a), noop-on(c, a), unstack, noop-holding(b), noop-holding(c), stack, pickup, stack, unstack, noop-on(a, b), stack, unstack, noop-holding(a), pickup, stack, unstack, noop-on(a, c), noop-on-table(a), 
+
+stack
+Parameter:
+b ?underob
+a ?ob
+Mutex With: noop-clear(a), noop-on-table(a), noop-holding(c), putdown, putdown, noop-on(a, c), stack, unstack, stack, unstack, noop-arm-empty, stack, unstack, pickup, stack, noop-on(b, a), putdown, pickup, unstack, noop-on(c, a), noop-holding(a), noop-on(c, b), noop-clear(b), noop-on(a, b), stack, unstack, noop-holding(b), unstack, pickup, 

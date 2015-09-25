@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -82,6 +83,7 @@ public class GraphPlanner {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return;
 		}
 
 		PDDLObject problem = null;
@@ -90,6 +92,7 @@ public class GraphPlanner {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return;
 		}
 
 		PDDLObject pb = null;
@@ -161,10 +164,12 @@ public class GraphPlanner {
 			Vector<graphplanner.Action> plan = graphplanner.getPlan();
 			try {
 				FileWriter fw = new FileWriter("output.pln");
-				Enumeration e = plan.elements();
-				while (e.hasMoreElements()) {
-					String pstep = (String) e.nextElement() + "\n";
+				int len = plan.size();
+				
+				for (int i=0; i<len; i++) {
+					String pstep = (String) plan.get(i).toString() + "\n";
 					fw.write(pstep, 0, pstep.length());
+					System.out.println(pstep);
 				}
 				fw.close();
 				System.out.println("\nPlan Generated Successfully");
@@ -195,16 +200,23 @@ public class GraphPlanner {
         for (InitEl el : init) {
             if (el.getExpID().equals(ExpID.ATOMIC_FORMULA)) {
                 AtomicFormula predicate = (AtomicFormula) el;
-                State st = new State();
-                st.setPredicate(predicate.getPredicate());
+                String st = new String();
                 
-                Iterator<Term> iterator_init_para = predicate.iterator();
-				while (iterator_init_para.hasNext()) {
-					Term tm = iterator_init_para.next();
-					String pa = tm.getImage();
-					st.addParameter(pa);
-					// System.out.println(pa);
+                // for the state without parameters
+				if (predicate.iterator().hasNext()) {
+					st += predicate.getPredicate() + "(";
+					Iterator<Term> iterator_init_para = predicate.iterator();
+					while (iterator_init_para.hasNext()) {
+						Term tm = iterator_init_para.next();
+						String pa = tm.getImage();
+						st += pa + ", ";
+						// System.out.println(pa);
+					}
+					st = st.substring(0, st.length() - 2) + ")";
+				}else{
+					st += predicate.getPredicate();
 				}
+				System.out.println("Initial State:"+st);
                 this.initials.add(st);
             } else {
             	System.err
@@ -226,17 +238,23 @@ public class GraphPlanner {
 				switch (ep.getExpID()) {
 
 				case ATOMIC_FORMULA:
-					State st = new State();
+					
 					AtomicFormula ag = (AtomicFormula) ep;
-					st.setPredicate(ag.getPredicate());
-					st.setStateType("ATOMIC_FORMULA");
-					Iterator<Term> iterator_goal_para = ag.iterator();
-					while (iterator_goal_para.hasNext()) {
-						Term tm = iterator_goal_para.next();
-						String pa = tm.getImage();
-						st.addParameter(pa);
-						// System.out.println(pa);
+					 String st = new String();
+					if (ag.iterator().hasNext()) {
+						st += ag.getPredicate() + "(";
+						Iterator<Term> iterator_goal_para = ag.iterator();
+						while (iterator_goal_para.hasNext()) {
+							Term tm = iterator_goal_para.next();
+							String pa = tm.getImage();
+							st += pa + ", ";
+							// System.out.println(pa);
+						}
+						st = st.substring(0, st.length() - 2) + ")";
+					}else{
+						st += ag.getPredicate();
 					}
+					System.out.println("Goal State:"+st);
 					this.goal.add(st);
 						break;
 				case NOT:
@@ -244,18 +262,23 @@ public class GraphPlanner {
 					Exp nexp = notExp.getExp();
 
 					AtomicFormula np = (AtomicFormula) nexp;
-					State nst = new State();
-					nst.setStateType("NOT");
-					String npred = np.getPredicate();
-					nst.setPredicate(npred);
+					String nst = new String();
+					
+					if (np.iterator().hasNext()) {
+						nst += "NOT-" + np.getPredicate() + "(";
 
-					Iterator<Term> iterator_neff_para = np.iterator();
-					while (iterator_neff_para.hasNext()) {
-						Term ntm = iterator_neff_para.next();
-						String npa = ntm.getImage();
-						nst.addParameter(npa);
-						// System.out.println(npa);
+						Iterator<Term> iterator_neff_para = np.iterator();
+						while (iterator_neff_para.hasNext()) {
+							Term ntm = iterator_neff_para.next();
+							String npa = ntm.getImage();
+							nst += npa + ", ";
+							// System.out.println(npa);
+						}
+						nst = nst.substring(0, nst.length() - 2) + ")";
+					}else{
+						nst += "NOT-"+np.getPredicate();
 					}
+					System.out.println("Goal State:"+nst);
 					this.goal.add(nst);
 					break;
 				default:
@@ -265,31 +288,42 @@ public class GraphPlanner {
 			}
 			}
 		}else if(goal.getExpID() == ExpID.ATOMIC_FORMULA){
-			State st = new State();
+			String st = new String();
 			AtomicFormula ag = (AtomicFormula) goal;
-			st.setPredicate(ag.getPredicate());
-			st.setStateType("ATOMIC_FORMULA");
-			Iterator<Term> iterator_goal_para = ag.iterator();
-			while (iterator_goal_para.hasNext()) {
-				Term tm = iterator_goal_para.next();
-				String pa = tm.getImage();
-				st.addParameter(pa);
-				// System.out.println(pa);
+			
+			if (ag.iterator().hasNext()) {
+				st += ag.getPredicate() + "(";
+				Iterator<Term> iterator_goal_para = ag.iterator();
+				while (iterator_goal_para.hasNext()) {
+					Term tm = iterator_goal_para.next();
+					String pa = tm.getImage();
+					st += pa + ", ";
+					// System.out.println(pa);
+				}
+				st = st.substring(0, st.length() - 2) + ")";
+			}else{
+				st += ag.getPredicate();
 			}
+			System.out.println("Goal State:"+st);
 			this.goal.add(st);
 		}else if(goal.getExpID() == ExpID.NOT){
-			State st = new State();
+			String nst = new String();
 			AtomicFormula ag = (AtomicFormula) goal;
-			st.setPredicate(ag.getPredicate());
-			st.setStateType("NOT");
+			if (ag.iterator().hasNext()) {
+			nst += "NOT-"+ag.getPredicate()+"(";
 			Iterator<Term> iterator_goal_para = ag.iterator();
 			while (iterator_goal_para.hasNext()) {
 				Term tm = iterator_goal_para.next();
-				String pa = tm.getImage();
-				st.addParameter(pa);
+				String npa = tm.getImage();
+				nst += npa+", ";
 				// System.out.println(pa);
 			}
-			this.goal.add(st);
+			nst =nst.substring(0,nst.length()-2)+")";
+			}else{
+				nst += "NOT-"+ag.getPredicate();
+			}
+			System.out.println("Goal State:"+nst);
+			this.goal.add(nst);
 		}
     }
 	
@@ -550,6 +584,12 @@ public class GraphPlanner {
             }
             ActionLayer act_layer = new ActionLayer (lastPropLayer, acts );
             lastPropLayer.setNextLayer (act_layer);
+            
+            System.out.println("\nProposition Layer "+levels);
+            System.out.println(lastPropLayer.toString());
+            System.out.println("\nAction Layer");
+            System.out.println(acts.toString());
+            
             // point to Pi+1
             lastPropLayer = act_layer.getNextLayer();
             // test that all goals are reachable
@@ -589,29 +629,43 @@ public class GraphPlanner {
         return true;
     }
     
-    private boolean levelOff() {
-        if (levels < 2)
-        return false;
-        PropositionLayer p = lastPropLayer;
-        ActionLayer act = lastPropLayer.getPrevLayer();
-        if ( p.equal (act.getPrevLayer()) == false)
-        return false;
-        else
-        {
-            p = act.getPrevLayer();
-            if (act.equal (p.getPrevLayer()) == false)
-            return false;
-        }
-        return true;
-    }
+	private boolean levelOff() {
+		if (levels < 2)
+			return false;
+		PropositionLayer p = lastPropLayer;
+		ActionLayer act = lastPropLayer.getPrevLayer();
+		System.out.println("lastProp size " + p.size()
+				+ " vs act prelayer size " + act.getPrevLayer().size());
+
+		if (p.equal(act.getPrevLayer()) == false)
+			return false;
+		
+		p = act.getPrevLayer();
+		
+		Iterator<Map.Entry<String, Proposition>> it_prop = p.propositions.entrySet().iterator();
+		while(it_prop.hasNext()){
+			Proposition pro = it_prop.next().getValue();
+			Proposition pa = p.getProposition(pro.getState());
+			if(!pro.mutexEqual(pa)) return false;
+		}
+		
+	
+		if (act.equal(p.getPrevLayer()) == false)
+			return false;
+
+		return true;
+	}
     
 	public Vector<graphplanner.Action> getPlan() {
 		Vector<graphplanner.Action> plan = new Vector<graphplanner.Action>();
 
 		ActionLayer act = firstPropLayer.getNextLayer();
 		while (act != null) {
-			plan.addAll(act.getApplicableActions());
-			act = act.getNextLayer().getNextLayer();
+			Vector<graphplanner.Action> applible_acts = act.getApplicableActions();
+			System.out.println(applible_acts.toString());
+			plan.addAll(applible_acts);
+			PropositionLayer prop = act.getNextLayer();
+			act = prop.getNextLayer();
 		}
 		return plan;
 	}

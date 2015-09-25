@@ -48,12 +48,12 @@ public class Condition {
 	
 	public String toString(){
 		String ret  = new String();
-		ret += statType+" "+predicate+" ( ";
+		ret += statType+" "+predicate+" (";
 		Iterator<String> it_para = parameter.iterator();
 		while(it_para.hasNext()){
-			ret += " "+it_para.next();
+			ret += it_para.next();
 		}
-		ret += " )  ";
+		ret += ")  ";
 		
 		return ret;
 	}

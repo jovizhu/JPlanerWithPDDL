@@ -1,0 +1,11 @@
+objects:
+ Color (green);
+ Color (red);
+ Section (sec1);
+
+
+init: CurrentColor (green)
+
+goal: Painted (sec1, red)
+
+

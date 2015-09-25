@@ -22,7 +22,7 @@ public class PropositionLayer {
     /**
      * hashtable for all propositions in that layer
      */
-    private HashMap<State, Proposition> propositions;
+    public HashMap<String, Proposition> propositions;
 
     /**
      * The propositions_vector.
@@ -42,8 +42,9 @@ public class PropositionLayer {
      * Creates a new instance of PropositionLayer.
      */
     public PropositionLayer() {
-        propositions = new  HashMap<State, Proposition>();
+        propositions = new  HashMap<String, Proposition>();
         conjunction = new Conjunction();
+        propositions_vector = new Vector<Proposition>(); 
     }
 
     /**
@@ -53,8 +54,9 @@ public class PropositionLayer {
      */
     public PropositionLayer(ActionLayer theprev) {
         this.prev = theprev;
-        propositions = new HashMap<State, Proposition>();
+        propositions = new HashMap<String, Proposition>();
         conjunction = new Conjunction();
+        propositions_vector = new Vector<Proposition>();
     }
 
 
@@ -137,7 +139,7 @@ public class PropositionLayer {
         return thePro;
     }
     
-    public Proposition addProposition(State st) {
+    public Proposition addProposition(String st) {
         // first check that it doesn't exixt
         if (propositions.containsKey(st)){
         	return (Proposition) propositions.get (st);
@@ -164,10 +166,16 @@ public class PropositionLayer {
      * @param theConjunction The init layer.
      */
     public void setInitLayer(Conjunction theCnj) {
-        Iterator<State> it_cnj = theCnj.getStates().iterator();
+        Iterator<String> it_cnj = theCnj.getStates().iterator();
         while(it_cnj.hasNext()){
-        	State st = it_cnj.next();
+        	String st = it_cnj.next();
         	this.addProposition(st);
+        }
+        
+        Iterator<Map.Entry<String, Proposition>> it_prop = this.propositions.entrySet().iterator();
+        while(it_prop.hasNext()){
+        	Map.Entry<String, Proposition> prop = it_prop.next();
+        	this.propositions_vector.add(prop.getValue());
         }
     }
 
@@ -205,9 +213,8 @@ public class PropositionLayer {
      */
     public String toString() {
         String s = new String();
-        s += "\nProposition Layer";
         for (int i = 0 ; i < propositions_vector.size(); i++)
-        s += getProposition(i).toString();
+        s += "Proposition: "+getProposition(i).toString()+"\n";
         return s;
     }
 
@@ -218,9 +225,9 @@ public class PropositionLayer {
         propositions_vector = new Vector<Proposition>();
         
         
-        Iterator<Entry<State, Proposition>> it_prop = propositions.entrySet().iterator();
+        Iterator<Entry<String, Proposition>> it_prop = propositions.entrySet().iterator();
         while(it_prop.hasNext()){
-        	Map.Entry<State, Proposition> pair = (Entry<State, Proposition>) it_prop.next();
+        	Map.Entry<String, Proposition> pair = (Entry<String, Proposition>) it_prop.next();
         	propositions_vector.add(pair.getValue());
         }
        
@@ -252,10 +259,5 @@ public class PropositionLayer {
         }
         p1.addMutexProp(p2);
     }
-
-	public Proposition getProposition(State s) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 } // end PropositionLayer

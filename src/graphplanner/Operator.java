@@ -11,25 +11,13 @@ import pddl4j.exp.type.Type;
 
 public class Operator {
 
-	public Operator() {
-		super();
-		// TODO Auto-generated constructor stub
-		operatorHead = new OperatorHead();
-		precond = new ArrayList<Condition>();
-		addeff = new ArrayList<Condition>();
-		deleff = new ArrayList<Condition>();
-		validUnifiers = new ArrayList<String>();
-		allUnifiers = new ArrayList<String>();
-		//paraConstants = new HashMap<String, ArrayList<String>>();
-		
-		unifiers = new ArrayList<Unifier>();
-	}
+
 
 	public OperatorHead operatorHead;
 	public HashMap<String, ArrayList<String>> paraConstants;
 
-	public ArrayList<String> allUnifiers;
-	public ArrayList<String> validUnifiers;
+	//public ArrayList<String> allUnifiers;
+	//public ArrayList<String> validUnifiers;
 	
 	
 	public ArrayList<Condition> precond;
@@ -40,6 +28,21 @@ public class Operator {
 
 	public ArrayList<Unifier> unifiers;
 
+	
+	public Operator() {
+		super();
+		// TODO Auto-generated constructor stub
+		operatorHead = new OperatorHead();
+		precond = new ArrayList<Condition>();
+		addeff = new ArrayList<Condition>();
+		deleff = new ArrayList<Condition>();
+		//validUnifiers = new ArrayList<String>();
+		//allUnifiers = new ArrayList<String>();
+		//paraConstants = new HashMap<String, ArrayList<String>>();
+		
+		unifiers = new ArrayList<Unifier>();
+	}
+/*	
 	public ArrayList<String> getAllUnifiers() {
 		return allUnifiers;
 	}
@@ -54,7 +57,7 @@ public class Operator {
 
 	public void setValidUnifiers(ArrayList<String> validUnifiers) {
 		this.validUnifiers = validUnifiers;
-	}
+	}*/
 
 
 	public ArrayList<Condition> getPrecond() {
@@ -109,8 +112,7 @@ public class Operator {
 	
 	public ArrayList<Unifier> initUnifiers(ArrayList<Object> objects) {
 
-		ArrayList<Unifier> unifiers = new ArrayList<Unifier>();
-		
+		//ArrayList<Unifier> unifiers = new ArrayList<Unifier>();	
 		Iterator<Entry<String, String>> it_var = operatorHead.varList
 				.entrySet().iterator();
 		
@@ -137,9 +139,12 @@ public class Operator {
 									.iterator();
 							while (it_old__unifier.hasNext()) {
 								Unifier un = new Unifier((Unifier) it_old__unifier.next());
-								un.add(var_name, ob_name);
-								System.out.println(var_name+" "+ob_name);
-								current_unifiers.add(un);
+								if (!un.getTable().containsValue(ob_name)) {
+									un.add(var_name, ob_name);
+									System.out
+											.println(var_name + " " + ob_name);
+									current_unifiers.add(un);
+								}
 							}
 						} else {
 							Unifier un = new Unifier();
@@ -168,14 +173,14 @@ public class Operator {
 	 public Vector<Action> generateActions(Conjunction thePre) {
 		 
 	        Vector<Action> actions = new Vector<graphplanner.Action>();
-	        Vector<String> vars = this.operatorHead.getVars();
+	        
 	        // note: there must be at least one variable
 	        // or there is no pre, add, del == no operator
 	        int len = unifiers.size();
 	        for (int i = 0; i < len; i++)
 	        {
 	            Unifier un = (Unifier) unifiers.get(i);
-	           
+	            //System.out.println(un.toString());
 	            Conjunction apre = G.substitute(precond, un);
 	           
 	            // apre may be null
@@ -196,7 +201,7 @@ public class Operator {
 		 String ret  = new String();
 		 ret += operatorHead.toString();
 		 
-		 ret += "\n\tUnifiers\n\t";
+		 ret += "\n\tUnifiers\t";
 		 Iterator<Unifier> it_un = unifiers.iterator();
 		 while(it_un.hasNext()){
 			 ret += "  [";
@@ -206,24 +211,24 @@ public class Operator {
 				 Map.Entry<String, String> un_table_entry = it_un_table_entry.next();
 				 ret += "("+un_table_entry.getKey()+") "+un_table_entry.getValue()+"  ";
 			 }
-			 ret += "]  \n";
+			 ret += "]  ";
 		 }
 		 
-		 ret += "\n\tPreConditon\n\t";
+		 ret += "\n\tPreConditon\t";
 		 Iterator<Condition> it_pre = precond.iterator();
 		 while(it_pre.hasNext()){
 			 Condition cond = (Condition)it_pre.next();
 			 ret += "  "+cond.toString();
 		 }
 		 
-		 ret += "\n\tAdd Effect\n\t";
+		 ret += "\n\tAdd Effect\t";
 		 Iterator<Condition> it_addeff = addeff.iterator();
 		 while(it_addeff.hasNext()){
 			 Condition cond = (Condition)it_addeff.next();
 			 ret += "  "+cond.toString();
 		 }
 		 
-		 ret += "\n\tDel Effect\n\t";
+		 ret += "\n\tDel Effect\t";
 		 Iterator<Condition> it_deleff = deleff.iterator();
 		 while(it_deleff.hasNext()){
 			 Condition cond = (Condition)it_deleff.next();

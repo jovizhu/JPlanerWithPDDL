@@ -13,11 +13,11 @@
 	    bos-airport -  airport)
   (:init
 	 (at airplane1 bos-airport)
-	 (at airplane1 par-airport)
+	 (at airplane2 par-airport)
 	 )
   (:goal (and 
 	  (at airplane2 bos-airport)
-	  (at airplane2 jfk-airport)
+	  (at airplane1 jfk-airport)
 	  )
 	 )
   )

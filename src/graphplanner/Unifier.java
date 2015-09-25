@@ -15,7 +15,6 @@ import java.util.*;
  */
 public class Unifier {
 
-
     private HashMap<String, String> table;
 
     public Unifier(Unifier unifier) {
@@ -79,14 +78,14 @@ public class Unifier {
      * @param varList The var list.
      * @param valList The val list.
      */
-    public Unifier(Vector varList, String valList) {
+    public Unifier(Vector<String> varList, String valList) {
         StringTokenizer st2 = new StringTokenizer (valList, " (),\t\n\r\f" , false);
         int len = varList.size();
         if ( len != st2.countTokens())
         {
             // TODO: throw RuntimeException and exit
         }
-        table = new HashMap();
+        table = new HashMap<String, String>();
         for (int i = 0; i < len; i++)
         {
             table.put ((String) varList.elementAt(i), st2.nextToken());
@@ -99,9 +98,6 @@ public class Unifier {
     // ------------------------------------------------------------------------
     /**
      * get a unifier for the passed variable.
-     *  
-     * @param var The variable to be unified.
-     * @return  a string represents the unified variable.
      */
     String get(String var) {
         if (var.startsWith ("@"))	// even numbers will start with @
@@ -114,6 +110,16 @@ public class Unifier {
     	this.table.put(var, constant);
     }
 
+    public String toString(){
+    	String ret = new String();
+         Iterator<Map.Entry<String, String>> it_table = this.table.entrySet().iterator();
+         while(it_table.hasNext()){
+         	Map.Entry<String, String> item = it_table.next();
+         	ret +="["+"("+item.getKey()+") "+ item.getValue() +"]  ";
+         }
+         return ret;
+    	
+    }
     // ------------------------------------------------------------------------
     // --- static method                                                    ---
     // ------------------------------------------------------------------------

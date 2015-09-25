@@ -1,0 +1,28 @@
+(define (domain robot)
+(:requirements :strips :typing)
+(:predicates (CurrentColor ?x)
+             (Painted ?x ?y))
+
+             
+operator: Paint (Section ?sec, Color ?clr)
+true
+[ CurrentColor (?clr)]
+[ Painted (?sec, ?clr) ]
+true
+
+ (:action Paint
+	:parameters
+		(?sec - Section
+		 ?clr - Color)
+	:precondition
+		(CurrentColor ?clr)
+	:effect
+		(and 	(Painted ?sec, ?clr) )) 
+		(at ?airplane ?loc-to)))
+		
+operator: ChangeColor (Color ?old, Color ?new)
+?old != ?new
+[ CurrentColor (?old) ]
+[ CurrentColor (?new) ]
+[ CurrentColor (?old) ]
+

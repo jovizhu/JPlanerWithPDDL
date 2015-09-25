@@ -9,48 +9,48 @@ import java.util.*;
 public class Conjunction {
 
 
-	private ArrayList<State> states;
+	private ArrayList<String> states;
 
 
     public Conjunction() {
-        states = new ArrayList<State>();
+        states = new ArrayList<String>();
     }
 
     public Conjunction(Conjunction cnj){
-    	states = new ArrayList<State>();
-    	Iterator<State> it_states = cnj.states.iterator();
+    	states = new ArrayList<String>();
+    	Iterator<String> it_states = cnj.states.iterator();
     	while(it_states.hasNext()){
-    		State st = new State((State)it_states.next());
+    		String st = new String((String)it_states.next());
     		states.add(st);
     		
     	}
     }
     
-    public Conjunction(State st){
-    	states = new ArrayList<State>();
+    public Conjunction(String st){
+    	states = new ArrayList<String>();
     	states.add(st);
     }
 	
-    public ArrayList<State> getStates() {
+    public ArrayList<String> getStates() {
 		return states;
 	}
 
 
 
-	public void setStates(ArrayList<State> states) {
+	public void setStates(ArrayList<String> states) {
 		this.states = states;
 	}
 
 
 
    
-    public void add(State lit) {
+    public void add(String lit) {
         states.add (lit);
     }
 
    
-    public State get(int index) {
-        return (State) states.get(index);
+    public String get(int index) {
+        return (String) states.get(index);
     }
 
    
@@ -59,7 +59,7 @@ public class Conjunction {
     }
 
    
-    public boolean remove(State literal) {
+    public boolean remove(String literal) {
         return states.remove (literal);
     }
 
@@ -70,11 +70,22 @@ public class Conjunction {
      */
     public void addConjunction(Conjunction theCnj) {
 
-    	Iterator<State> it_cnj = theCnj.states.iterator();
+    	Iterator<String> it_cnj = theCnj.states.iterator();
     	while(it_cnj.hasNext()){
-    		State cnj = it_cnj.next();
-    		if(this.states.contains(cnj)){
+    		String cnj = it_cnj.next();
+    		if(!this.states.contains(cnj)){
     			this.states.add(cnj);
+    		}
+    	}
+    }
+    
+    public void removeConjunction(Conjunction theCnj) {
+
+    	Iterator<String> it_cnj = theCnj.states.iterator();
+    	while(it_cnj.hasNext()){
+    		String cnj = it_cnj.next();
+    		if(this.states.contains(cnj)){
+    			this.states.remove(cnj);
     		}
     	}
     }
@@ -86,10 +97,10 @@ public class Conjunction {
 
     public boolean contains(Conjunction theSub) {
        
-        Iterator<State> it_cnj = theSub.states.iterator();
+        Iterator<String> it_cnj = theSub.states.iterator();
         while (it_cnj.hasNext())
         {
-        	State cnj = it_cnj.next();
+        	String cnj = it_cnj.next();
             if (this.contains(cnj) == false)
             	return false;
         }
@@ -97,10 +108,10 @@ public class Conjunction {
     }
 
   
-    public boolean contains(State ast) {
-    	Iterator<State> it_st = this.states.iterator();
+    public boolean contains(String ast) {
+    	Iterator<String> it_st = this.states.iterator();
     	while(it_st.hasNext()){
-    		State st = it_st.next();
+    		String st = it_st.next();
     		if(st.equals(ast)){
     			return true;
     		}
@@ -110,10 +121,10 @@ public class Conjunction {
 
    
     public boolean Intersect(Conjunction theCnj) {
-    	Iterator<State> it_cnj = theCnj.states.iterator();
+    	Iterator<String> it_cnj = theCnj.states.iterator();
         while (it_cnj.hasNext())
         {
-        	State cnj = it_cnj.next();
+        	String cnj = it_cnj.next();
             if (this.contains ( cnj))
             	return true;
         }
@@ -121,17 +132,16 @@ public class Conjunction {
     }
 
   
-    public boolean equal(Conjunction theCnj) {
-        if (states.size() != theCnj.size())
-        return false;
-        int len = states.size();
-        for (int i = 0; i < len; i++)
-        {
-            if (this.contains (theCnj.get(i)) == false)
-            return false;
-        }
-        return true;
-    }
+	public boolean equal(Conjunction theCnj) {
+		if (states.size() != theCnj.size())
+			return false;
+		int len = states.size();
+		for (int i = 0; i < len; i++) {
+			if (this.contains(theCnj.get(i)) == false)
+				return false;
+		}
+		return true;
+	}
 
     
     public String toString() {
@@ -141,14 +151,8 @@ public class Conjunction {
         return null;
         for (int i = 0; i < size; i++)
         {
-        	State st = states.get(i);
-            s += st.getPredicate() +" (";
-            Iterator<String> it_para = st.getParameter().iterator();
-            while(it_para.hasNext()){
-            	String para = it_para.next();
-            	s +=para+" ";
-            }
-            s +=")\n";
+        	String st = states.get(i);
+            s += st+"  ";
         }
         return s;
     }
