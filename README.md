@@ -5,6 +5,7 @@ Now it supports. but when I test it, i found that the
 Java GraphPlan is not a well finished planner.
 There is some errors, in the leveloff funciton, duplicate checking for plan.
 I believe there is some error in the search plan funcion.
+   wei zhu
 
 
 JPlan: Java GraphPlan Implementation
